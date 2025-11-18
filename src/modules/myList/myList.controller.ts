@@ -5,12 +5,14 @@ import {
   Param,
   Post,
   Put,
+  Query,
   VERSION_NEUTRAL,
 } from '@nestjs/common';
-import { UserData } from '../../generics/decorators/request.decorator';
-import { MyListService } from './myList.service';
 import { UpdateMyListDTO } from './dto/updateList.dto';
 import { RemoveListDTO } from './dto/removeList.dto';
+import { FetchListDTO } from './dto/fetchList.dto';
+import { UserData } from '../../generics/decorators/request.decorator';
+import { MyListService } from './myList.service';
 import { MyList } from './entities/myListSchema.entity';
 
 @Controller({
@@ -21,8 +23,10 @@ export class MyListController {
   constructor(private readonly myListService: MyListService) {}
 
   @Get()
-  getMyList(@UserData('userId') userId: string): Promise<MyList[]> {
-    return this.myListService.getMyList(userId);
+  getMyList(
+    @UserData('userId') userId: string,
+    @Query() query: FetchListDTO): Promise<MyList[]> {
+    return this.myListService.getMyList(userId,query);
   }
 
   @Put('remove/:itemId')
@@ -39,10 +43,5 @@ export class MyListController {
     @Body() updateMyListDto: UpdateMyListDTO,
   ) {
     return this.myListService.addToMyList(userId, updateMyListDto);
-  }
-
-  @Post('add-data')
-  addData() {
-    return this.myListService.addData();
   }
 }
